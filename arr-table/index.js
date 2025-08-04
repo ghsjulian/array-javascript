@@ -5,6 +5,13 @@ const areayValues = arrayContainer.querySelectorAll("span");
 const msg = document.querySelector("#msg");
 const lenContainer = document.querySelector("#arr-len");
 
+const scrollView = type => {
+    arrayContainer.scrollBy({
+        left: type,
+        behavior: "smooth"
+    });
+};
+
 const showMessage = (type, message) => {
     if (type) {
         msg.classList.add("success");
@@ -35,7 +42,7 @@ const initArray = (arr, container, lenContainer) => {
 
 // Add Random Element At Last Index
 document.querySelector("#add-random-element-btn").onclick = () => {
-    let value = Math.floor(Math.random() *100);
+    let value = Math.floor(Math.random() * 100);
     INITIAL_ARRAY.push(value);
     let span = document.createElement("span");
     span.setAttribute("index", "" + (INITIAL_ARRAY.length - 1));
@@ -74,6 +81,7 @@ document.querySelector("#add-new-element-btn").onclick = () => {
         lenContainer.textContent = "" + INITIAL_ARRAY.length;
         initArray(INITIAL_ARRAY, arrayContainer, lenContainer);
         showMessage(true, `${value} Added At The Last Index`);
+        scrollView(300);
         return;
     }, 500);
 };
@@ -101,11 +109,11 @@ document.querySelector("#add-new-element-btn-first").onclick = () => {
         lenContainer.textContent = "" + INITIAL_ARRAY.length;
         initArray(INITIAL_ARRAY, arrayContainer, lenContainer);
         showMessage(true, `${value} Added At The First Index`);
+        scrollView(-300);
         return;
     }, 500);
 };
 // Edit An Element
-// TODO : Edit Element Is Not Working Have To Fixed It.
 document.querySelector("#edit-element-btn").onclick = () => {
     let value = document.querySelector("#edit-element-input").value.trim();
     if (!value) {
@@ -114,12 +122,22 @@ document.querySelector("#edit-element-btn").onclick = () => {
     }
     arrayContainer.querySelectorAll("span").forEach(span => {
         if (span.getAttribute("index") === value) {
+            span.style.border = "2px solid #17b600";
             let input = document.createElement("input");
             input.value = span.textContent;
             input.type = "number";
+            input.enterKeyHint = "go";
             input.placeholder = "Enter Value";
-            input.onkeyup = () => {
-                alert();
+            input.onkeyup = e => {
+                if (e.keyCode === 13) {
+                    INITIAL_ARRAY[parseInt(value)] = parseInt(e.target.value);
+                    input.remove();
+                    span.textContent = e.target.value;
+                    span.style.border = "none";
+                    span.style.borderRight =
+                        ".1px solid rgba(139, 169, 183, 0.887)";
+                    document.querySelector("#edit-element-input").value = "";
+                }
             };
             span.innerHTML = "";
             span.appendChild(input);
